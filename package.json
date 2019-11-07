@@ -1,0 +1,26 @@
+{
+  "name": "nuxt_demo2",
+  "version": "1.0.0",
+  "description": "My fantabulous Nuxt.js project",
+  "author": "zshawk1982",
+  "private": true,
+  "scripts": {
+    "dev": "cross-env NODE_ENV=development nodemon server/index.js --watch server",
+    "build": "nuxt build",
+    "start": "cross-env NODE_ENV=production node server/index.js",
+    "generate": "nuxt generate"
+  },
+  "dependencies": {
+    "axios": "^0.19.0",
+    "cross-env": "^5.2.0",
+    "element-ui": "^2.4.11",
+    "koa": "^2.6.2",
+    "koa-router": "^7.4.0",
+    "moment": "^2.24.0",
+    "mongoose": "^5.7.7",
+    "nuxt": "^2.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.9"
+  }
+}
