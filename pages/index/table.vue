@@ -90,7 +90,7 @@
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="editVisible = false">取 消</el-button>
-        <el-button type="primary" @click="saveEdit">确 定</el-button>
+        <el-button type="primary" @click="saveEdit(form)">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -197,24 +197,31 @@ export default {
     },
     // 编辑操作
     handleEdit(index, row) {
-      const self = this
-      console.log(index,row);
-     return axios.put(`/api/users/${row._id}`,{username:row.username,tel:row.tel}).then(res =>{
-        if(res.data.result === 'success'){
-           this.idx = index;
+      
+      this.idx = index;
            this.id = row.id;
            this.form = row;
            this.editVisible = true;
+           //第一次请求传入所需跟新数据
+      axios.put(`/api/users/${row._id}`,{username:row.username,tel:row.tel}).then(res =>{
+        if(res.data.result === 'success'){
+           console.log("编辑数据为跟新数据库")
         }
       })
 
       
     },
     // 保存编辑
-    saveEdit() {
+    saveEdit(row) {
       this.editVisible = false;
       this.$message.success(`修改第 ${this.idx + 1} 行成功`);
       this.$set(this.tableData, this.idx, this.form);
+      //第二次请求跟新数据库
+      axios.put(`/api/users/${row._id}`,{username:row.username,tel:row.tel}).then(res =>{
+        if(res.data.result === 'success'){
+           console.log("跟新数据库")
+        }
+      })
     },
     // 分页导航
     handlePageChange(val) {

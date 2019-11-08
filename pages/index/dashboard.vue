@@ -7,7 +7,7 @@
  * @FilePath: \nuxt_demo2\pages\index\index.vue
  -->
 <template>
-  <div><h1 v-for="(item,index) in db" :key="item.id">{{db[index].age}}{{db[index].username}}{{db[index].password}}</h1></div>
+  <div><h1 v-for="(item,index) in db" :key="item.id">{{db[index].age}}{{db[index].username}}{{db[index].tel}}</h1></div>
 </template>
 <script>
 import axios from 'axios'

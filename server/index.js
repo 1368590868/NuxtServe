@@ -10,7 +10,8 @@ const Koa = require('koa')
 const consola = require('consola')
 const { Nuxt, Builder } = require('nuxt')
 const { connect } = require('./dbs/init.js');
-
+//引入bodyyparser
+var bodyParser = require('koa-bodyparser')
 const userRouter = require('./interface/users.js')
 
 const app = new Koa()
@@ -23,7 +24,8 @@ config.dev = app.env !== 'production'
 async function start() {
   // Instantiate nuxt.js
   const nuxt = new Nuxt(config)
-
+  //使用bodyparser
+  app.use(bodyParser());
   const {
     host = process.env.HOST || '127.0.0.1',
     port = process.env.PORT || 3000
@@ -46,6 +48,8 @@ async function start() {
     ctx.status = 200
     ctx.respond = false // Bypass Koa's built-in response handling
     ctx.req.ctx = ctx // This might be useful later on, e.g. in nuxtServerInit or with nuxt-stash
+    //kor body
+    ctx.body = ctx.request.body;
     nuxt.render(ctx.req, ctx.res)
   })
 

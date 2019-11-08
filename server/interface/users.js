@@ -30,6 +30,7 @@ router.get('/api/users', async (ctx, next) => {
 //   }
 // })
 router.delete('/api/users/:id',async(ctx,next)=>{
+  //params获取动态路由值
   const id = ctx.params.id
   const result = await userModel.remove({_id:id})
   consola.info(ctx.query)
@@ -41,12 +42,11 @@ router.delete('/api/users/:id',async(ctx,next)=>{
 //跟新接口
 router.put('/api/users/:id',async(ctx,next)=>{
   const id = ctx.params.id
-  consola.info(ctx.request)
-  ctx.req.on('data',data => {
-    consola.info('data:'+data);
-    
-  })
-  const result = await userModel.update({_id:id},{$set:{username:'123'}})
+  let username = ctx.request.body.username
+  let tel = ctx.request.body.tel
+  consola.info(ctx.request.body)
+ 
+  const result = await userModel.update({_id:id},{$set:{username:username,tel:tel}})
   // consola.info(ctx.query)
   consola.info('result',result)
   ctx.body={
