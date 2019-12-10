@@ -1,7 +1,7 @@
 <!--
  * @Author: your name
  * @Date: 2019-10-28 10:06:34
- * @LastEditTime: 2019-10-28 10:11:21
+ * @LastEditTime: 2019-11-17 15:33:42
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \nuxt_demo2\components\Header.vue

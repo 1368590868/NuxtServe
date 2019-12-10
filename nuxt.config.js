@@ -1,12 +1,12 @@
 /*
  * @Author: your name
  * @Date: 2019-10-28 09:28:39
- * @LastEditTime: 2019-10-29 09:01:15
+ * @LastEditTime: 2019-11-17 15:05:26
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \nuxt_demo2\nuxt.config.js
  */
-
+const webpack = require('webpack')
 module.exports = {
   mode: 'universal',
   /*
@@ -32,6 +32,9 @@ module.exports = {
   */
   css: [
     'element-ui/lib/theme-chalk/index.css',
+    'quill/dist/quill.snow.css',
+    'quill/dist/quill.bubble.css',
+    'quill/dist/quill.core.css',
     '~/assets/css/color-dark.css',
     '~/assets/css/icon.css',
     '~/assets/css/main.css'
@@ -40,7 +43,8 @@ module.exports = {
   ** Plugins to load before mounting the App
   */
   plugins: [
-    '@/plugins/element-ui'
+    '@/plugins/element-ui',
+    { src: '@/plugins/nuxt-quill-plugin.js', ssr: false }
   ],
   /*
   ** Nuxt.js dev-modules
@@ -51,12 +55,20 @@ module.exports = {
   ** Nuxt.js modules
   */
   modules: [
+    '@nuxtjs/axios',
   ],
+  axios: {},
   /*
   ** Build configuration
   */
   build: {
     transpile: [/^element-ui/],
+    plugins: [
+      new webpack.ProvidePlugin({
+        'window.Quill': 'quill/dist/quill.js',
+        Quill: 'quill/dist/quill.js'
+      })
+    ],
     /*
     ** You can extend webpack config here
     */

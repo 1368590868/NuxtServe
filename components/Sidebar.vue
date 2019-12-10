@@ -1,7 +1,7 @@
 <!--
  * @Author: your name
  * @Date: 2019-10-28 10:06:34
- * @LastEditTime: 2019-10-29 09:03:06
+ * @LastEditTime: 2019-11-20 09:18:38
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \nuxt_demo2\components\Sidebar.vue
@@ -60,92 +60,38 @@ export default {
         },
         {
           icon: "el-icon-lx-cascades",
-          index: "table",
+          index: "userList",
           title: "用户列表"
-        },
-        {
-          icon: "el-icon-lx-copy",
-          index: "tabs",
-          title: "tab选项卡"
         },
         {
           icon: "el-icon-lx-calendar",
           index: "3",
-          title: "表单相关",
+          title: "文章相关",
           subs: [
             {
-              index: "form",
-              title: "基本表单"
+              index: "articleList",
+              title: "文章列表"
             },
             {
-              index: "3-2",
-              title: "三级菜单",
-              subs: [
-                {
-                  index: "editor",
-                  title: "富文本编辑器"
-                },
-                {
-                  index: "markdown",
-                  title: "markdown编辑器"
-                }
-              ]
-            },
-            {
-              index: "upload",
-              title: "文件上传"
+              index: "articleAdd",
+              title: "发表文章"
             }
           ]
         },
         {
-          icon: "el-icon-lx-emoji",
-          index: "icon",
-          title: "自定义图标"
-        },
-        {
-          icon: "el-icon-pie-chart",
-          index: "charts",
-          title: "schart图表"
-        },
-        {
-          icon: "el-icon-rank",
-          index: "6",
-          title: "拖拽组件",
+          icon: "el-icon-lx-calendar",
+          index: "4",
+          title: "景点相关",
           subs: [
             {
-              index: "drag",
-              title: "拖拽列表"
+              index: "jindianList",
+              title: "景点列表"
             },
             {
-              index: "dialog",
-              title: "拖拽弹框"
+              index: "jindianAdd",
+              title: "创建景点"
             }
           ]
-        },
-        {
-          icon: "el-icon-lx-global",
-          index: "i18n",
-          title: "国际化功能"
-        },
-        {
-          icon: "el-icon-lx-warn",
-          index: "7",
-          title: "错误处理",
-          subs: [
-            {
-              index: "permission",
-              title: "权限测试"
-            },
-            {
-              index: "404",
-              title: "404页面"
-            }
-          ]
-        },
-        {
-          icon: "el-icon-lx-redpacket_fill",
-          index: "/donate",
-          title: "支持作者"
         }
       ]
     };

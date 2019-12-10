@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2019-10-29 09:18:08
- * @LastEditTime: 2019-10-30 09:10:24
+ * @LastEditTime: 2019-11-11 09:47:10
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \nuxt_demo2\server\interface\users.js
@@ -19,40 +19,59 @@ router.get('/api/users', async (ctx, next) => {
     result: 'success',
     data: result
   }
+
 })
-//数据库删除ctx.query 查看传值
-// router.get('/api/dusers',async(ctx,next)=>{
-//   const result = await userModel.remove({_id:ctx.query})
-//   consola.info(ctx.query)
-//   consola.info('result',result)
-//   ctx.body={
-//     result : 'success',
-//   }
-// })
-router.delete('/api/users/:id',async(ctx,next)=>{
-  //params获取动态路由值
+
+router.delete('/api/users/:id', async (ctx, next) => {
   const id = ctx.params.id
-  const result = await userModel.remove({_id:id})
-  consola.info(ctx.query)
-  consola.info('result',result)
-  ctx.body={
-    result : 'success',
+  // const result = await userModel.find({})
+  const result = await userModel.remove({ _id: id })
+  consola.info('result', result)
+  ctx.body = {
+    result: 'success'
+  }
+
+})
+
+router.put('/api/users', async (ctx, next) => {
+  // const result = await userModel.find({})
+  consola.info('result', ctx.request.body)
+  const userinfo = ctx.request.body
+  const result = await userModel.updateOne({ _id: userinfo._id }, { $set: userinfo });
+  // consola.info('result', result)
+  ctx.body = {
+    result: 'success'
+  }
+
+})
+
+router.get('/api/users/page/:index', async (ctx, next) => {
+  // 访问easymock提供的模拟数据
+  // const res = await axios.get(
+  //   'https://www.easy-mock.com/mock/5d5bcb688a9a76077dc8cd2a/mock/users/' +
+  //     ctx.params.index +
+  //     '?pagesize=' +
+  //     ctx.query.pagesize
+  // )
+  const pageIndex = ctx.params.index
+  const pageSize = ctx.query.pageSize
+  // console.log('*******', pageIndex)
+  // console.log('*******', pageSize)
+  // 连接数据库，分页获取users的信息
+  const result = await userModel.find({ })
+    .skip((pageIndex - 1) * parseInt(pageSize))
+    .limit(parseInt(pageSize))
+    .exec()
+
+  // console.log(result)
+
+  ctx.body = {
+    result: 'success',
+    data: result
   }
 })
-//跟新接口
-router.put('/api/users/:id',async(ctx,next)=>{
-  const id = ctx.params.id
-  let username = ctx.request.body.username
-  let tel = ctx.request.body.tel
-  consola.info(ctx.request.body)
- 
-  const result = await userModel.update({_id:id},{$set:{username:username,tel:tel}})
-  // consola.info(ctx.query)
-  consola.info('result',result)
-  ctx.body={
-    result : 'success',
-  }
-})
+
+
 module.exports = router;
 
 

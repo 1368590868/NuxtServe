@@ -1,7 +1,7 @@
 <!--
  * @Author: your name
  * @Date: 2019-10-29 08:54:31
- * @LastEditTime: 2019-10-30 09:23:38
+ * @LastEditTime: 2019-11-20 08:57:07
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \nuxt_demo2\pages\index\table.vue
@@ -11,7 +11,7 @@
     <div class="crumbs">
       <el-breadcrumb separator="/">
         <el-breadcrumb-item>
-          <i class="el-icon-lx-cascades"></i> 基础表格
+          <i class="el-icon-lx-cascades"></i> 文章列表
         </el-breadcrumb-item>
       </el-breadcrumb>
     </div>
@@ -31,7 +31,7 @@
         <el-button type="primary" icon="el-icon-search" @click="handleSearch">搜索</el-button>
       </div>
       <el-table
-        :data="tableData"
+        :data="articles"
         border
         class="table"
         ref="multipleTable"
@@ -40,17 +40,18 @@
       >
         <el-table-column type="selection" width="55" align="center"></el-table-column>
         <el-table-column prop="_id" label="ID" align="center"></el-table-column>
-        <el-table-column prop="username" label="用户名"></el-table-column>
-        <el-table-column label="性别">
-          <template slot-scope="scope">{{scope.row.sex=='female'?'女':'男'}}</template>
-        </el-table-column>
-        <el-table-column prop="tel" label="电话" align="center"></el-table-column>
-        <el-table-column prop="email" label="邮箱"></el-table-column>
+        <el-table-column prop="title" label="文章名"></el-table-column>
+        <el-table-column prop="author" label="作者"></el-table-column>
+        <el-table-column :show-overflow-tooltip="true" prop="desc" label="摘要" align="center"></el-table-column>
         <el-table-column prop="createAt" label="注册时间" align="center" :formatter="formatDate"></el-table-column>
-
-        <el-table-column prop="lastLoginAt" label="登录时间" :formatter="formatDate"></el-table-column>
+        <el-table-column prop="lastUpdateAt" label="更新时间" :formatter="formatDate"></el-table-column>
         <el-table-column label="操作" width="180" align="center">
           <template slot-scope="scope">
+            <el-button
+              type="text"
+              icon="el-icon-search"
+              @click="handleRead(scope.$index, scope.row)"
+            >查看</el-button>
             <el-button
               type="text"
               icon="el-icon-edit"
@@ -60,7 +61,7 @@
               type="text"
               icon="el-icon-delete"
               class="red"
-              @click="handleDelete(scope.$index, scope.row , scope.row._id)"
+              @click="handleDelete(scope.$index, scope.row)"
             >删除</el-button>
           </template>
         </el-table-column>
@@ -83,26 +84,37 @@
         <el-form-item label="用户名">
           <el-input v-model="form.username"></el-input>
         </el-form-item>
+        <el-form-item label="密码">
+          <el-input v-model="form.password" type="password"></el-input>
+        </el-form-item>
+        <el-form-item label="性别">
+          <el-radio-group v-model="form.sex">
+            <el-radio label="male">男</el-radio>
+            <el-radio label="female">女</el-radio>
+          </el-radio-group>
+        </el-form-item>
         <el-form-item label="电话">
           <el-input v-model="form.tel"></el-input>
+        </el-form-item>
+        <el-form-item label="邮箱">
+          <el-input v-model="form.email"></el-input>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="editVisible = false">取 消</el-button>
-        <el-button type="primary" @click="saveEdit(form)">确 定</el-button>
+        <el-button type="primary" @click="saveEdit">确 定</el-button>
       </span>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import axios from "axios";
 import moment from "moment";
 export default {
   name: "basetable",
   data() {
     return {
-      tableData: [],
+      articles: [],
       multipleSelection: [],
       delList: [],
       selectCate: "",
@@ -118,65 +130,87 @@ export default {
       id: -1
     };
   },
-  created() {
-    this.getData();
+  async asyncData({ $axios }) {
+    const res = await $axios.get("/api/article");
+    const res2 = await $axios.get("/api/article/page/1", {
+      params: {
+        pageSize: 5
+      }
+    });
+
+    // console.log('userlist', res.data.data)
+    // console.log('userpagelist', res2.data.data)
+    return {
+      articles: res2.data.data,
+      page: {
+        total: res.data.data.length,
+        size: 5,
+        index: 1
+      }
+    };
   },
-  // computed: {
-  //   data() {
-  //     return this.tableData.filter(d => {
-  //       let is_del = false;
-  //       for (let i = 0; i < this.delList.length; i++) {
-  //         if (d.name === this.delList[i].name) {
-  //           is_del = true;
-  //           break;
-  //         }
-  //       }
-  //       if (!is_del) {
-  //         if (
-  //           d.address.indexOf(this.selectCate) > -1 &&
-  //           (d.name.indexOf(this.selectWord) > -1 ||
-  //             d.address.indexOf(this.selectWord) > -1)
-  //         ) {
-  //           return d;
-  //         }
-  //       }
-  //     });
-  //   }
-  // },
   methods: {
     formatDate(row, column, cellValue, index) {
       return moment(cellValue).format("YYYY-MM-DD");
     },
-    getData() {
-      axios.get("/api/users").then(res => {
-        console.log(res);
-        if (res.data.result === "success") {
-          this.tableData = res.data.data;
+    // 点击查看
+    handleRead(index,row){
+        console.log(index,row);
+        this.$store.state.title = row.title
+        this.$store.state.desc = row.desc
+        this.$store.state.content = row.content
+        this.$store.state.imgUrl = row.logoLocalImageUrl
+        this.$router.push('/articleAdd')
+    },
+    async getData(index) {
+      // axios.get("/api/users").then(res => {
+      //   console.log(res);
+      //   if (res.data.result === "success") {
+      //     this.tableData = res.data.data;
+      //   }
+      // });
+      const res = await this.$axios.get("/api/article");
+      const res2 = await this.$axios.get("/api/article/page/" + index, {
+        params: {
+          pageSize: 5
         }
       });
+      this.articles = res2.data.data;
+      this.page = {
+        total: res.data.data.length,
+        size: 5,
+        index: index || 1
+      };
+    },
+    // 分页导航
+    handlePageChange(val) {
+      // this.page.index = val
+      // console.log(val)
+      this.getData(val);
     },
     // 触发搜索按钮
     handleSearch() {},
     // 删除操作
-    handleDelete(index, row , id) {
-      const self = this
+    handleDelete(index, row) {
+      const self = this;
       // 二次确认删除
       this.$confirm("确定要删除吗？", "提示", {
         type: "warning"
       })
         .then(() => {
-          
-            //传入需要删除的id值
-       return axios.delete(`/api/users/${id}`).then(res =>{
-        // console.log(res.data)
-        if(res.data.result === 'success'){
-          self.$message.success("删除成功");
-          self.tableData.splice(index, 1);
-        }
-      })
+          axios
+            .delete(`/api/users/${row._id}`)
+            .then(res => {
+              // console.log(res.data.result === "success");
+              // console.log(res);
+              if (res.data.result === "success") {
+                self.$message.success("删除成功");
+                self.tableData.splice(index, 1);
+              }
+            })
+            .catch(() => {});
         })
         .catch(() => {});
-      
     },
     // 多选操作
     handleSelectionChange(val) {
@@ -191,41 +225,22 @@ export default {
       }
       this.$message.error(`删除了${str}`);
       this.multipleSelection = [];
-
-      
     },
     // 编辑操作
     handleEdit(index, row) {
-      
       this.idx = index;
-           this.id = row.id;
-           this.form = row;
-           this.editVisible = true;
-           //第一次请求传入所需跟新数据
-      axios.put(`/api/users/${row._id}`,{username:row.username,tel:row.tel}).then(res =>{
-        if(res.data.result === 'success'){
-           console.log("编辑数据为跟新数据库")
-        }
-      })
-
-      
+      this.id = row.id;
+      this.form = row;
+      this.editVisible = true;
     },
     // 保存编辑
-    saveEdit(row) {
+    saveEdit() {
       this.editVisible = false;
-      this.$message.success(`修改第 ${this.idx + 1} 行成功`);
-      this.$set(this.tableData, this.idx, this.form);
-      //第二次请求跟新数据库
-      axios.put(`/api/users/${row._id}`,{username:row.username,tel:row.tel}).then(res =>{
-        if(res.data.result === 'success'){
-           console.log("跟新数据库")
-        }
-      })
-    },
-    // 分页导航
-    handlePageChange(val) {
-      this.page.index = val;
-      this.getData();
+
+      this.$axios.put("api/users", this.form).then(() => {
+        this.$message.success(`修改第 ${this.idx + 1} 行成功`);
+        this.$set(this.users, this.idx, this.form);
+      });
     }
   }
 };
